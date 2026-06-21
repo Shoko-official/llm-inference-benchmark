@@ -35,5 +35,21 @@ class TestLatencySimulator(unittest.TestCase):
         self.assertTrue(req_high["ttft_ms"] > req_low["ttft_ms"])
         self.assertTrue(req_high["latency_ms"] > req_low["latency_ms"])
 
+    def test_concurrency_scaling(self) -> None:
+        sim = LatencySimulator(base_ttft_ms=50.0, time_per_token_ms=5.0)
+        
+        # Heavy load (50 requests arriving at high rate)
+        # Verify that higher concurrency results in higher overall throughput
+        run_low = sim.simulate_run("low_concurrency", "model_a", num_requests=20, concurrent_requests=1, arrival_rate=100.0)
+        run_high = sim.simulate_run("high_concurrency", "model_a", num_requests=20, concurrent_requests=4, arrival_rate=100.0)
+        
+        t_low = run_low["metrics"]["throughput_tokens_per_sec"]
+        t_high = run_high["metrics"]["throughput_tokens_per_sec"]
+        
+        print(f"\nThroughput (concurrency=1): {t_low} tokens/sec")
+        print(f"Throughput (concurrency=4): {t_high} tokens/sec")
+        
+        self.assertTrue(t_high > t_low, f"Expected higher concurrency to scale throughput. Got: high={t_high}, low={t_low}")
+
 if __name__ == "__main__":
     unittest.main()
