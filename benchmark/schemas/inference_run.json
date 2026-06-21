@@ -1,0 +1,84 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "InferenceRunSchema",
+  "description": "Schema for LLM serving and inference run logs.",
+  "type": "object",
+  "properties": {
+    "run_id": {
+      "type": "string",
+      "description": "Unique identifier for the benchmark run."
+    },
+    "model_id": {
+      "type": "string",
+      "description": "Identifier of the model being benchmarked."
+    },
+    "timestamp": {
+      "type": "string",
+      "description": "ISO timestamp when the run was completed."
+    },
+    "metrics": {
+      "type": "object",
+      "properties": {
+        "throughput_tokens_per_sec": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Average generation throughput in tokens per second."
+        },
+        "mean_latency_ms": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Mean request latency in milliseconds."
+        },
+        "mean_ttft_ms": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Mean time-to-first-token in milliseconds."
+        },
+        "concurrent_requests": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Number of concurrent request streams during benchmarking."
+        }
+      },
+      "required": ["throughput_tokens_per_sec", "mean_latency_ms", "mean_ttft_ms", "concurrent_requests"],
+      "additionalProperties": false
+    },
+    "requests": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "request_id": {
+            "type": "string",
+            "description": "Unique ID for the request."
+          },
+          "prompt_tokens": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Number of tokens in the prompt."
+          },
+          "completion_tokens": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Number of tokens generated in the completion."
+          },
+          "latency_ms": {
+            "type": "number",
+            "minimum": 0,
+            "description": "Total request processing latency in milliseconds."
+          },
+          "ttft_ms": {
+            "type": "number",
+            "minimum": 0,
+            "description": "Time-to-first-token in milliseconds."
+          }
+        },
+        "required": ["request_id", "prompt_tokens", "completion_tokens", "latency_ms", "ttft_ms"],
+        "additionalProperties": false
+      },
+      "description": "Individual request latency details."
+    }
+  },
+  "required": ["run_id", "model_id", "metrics", "requests"],
+  "additionalProperties": false
+}
