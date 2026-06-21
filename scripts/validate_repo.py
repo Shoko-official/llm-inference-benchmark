@@ -22,6 +22,7 @@ REQUIRED_FILES = [
     "benchmark/README.md",
     "benchmark/mock_run.json",
     "benchmark/schemas/inference_run.json",
+    "benchmark/simulator.py",
     "scripts/validate_repo.py",
     "scripts/validate_inference.py",
     "scripts/generate_mock_data.py",
