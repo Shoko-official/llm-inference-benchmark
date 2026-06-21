@@ -22,15 +22,20 @@ REQUIRED_FILES = [
     "benchmark/README.md",
     "benchmark/mock_run.json",
     "benchmark/schemas/inference_run.json",
+    "benchmark/schemas/benchmark_profile.json",
     "benchmark/simulator.py",
+    "benchmark/profiles/profile_small_load.json",
+    "benchmark/profiles/profile_high_concurrency.json",
     "scripts/validate_repo.py",
     "scripts/validate_inference.py",
+    "scripts/validate_profile.py",
     "scripts/generate_mock_data.py",
     "scripts/simulate_inference.py",
     "tests/README.md",
     "tests/test_schemas.py",
     "tests/test_simulator.py",
     "tests/test_cli.py",
+    "tests/test_profiles.py",
 ]
 
 REQUIRED_DIRECTORIES = [
@@ -40,6 +45,8 @@ REQUIRED_DIRECTORIES = [
     "docs",
     "figures",
     "benchmark",
+    "benchmark/schemas",
+    "benchmark/profiles",
     "scripts",
     "tests",
 ]
@@ -127,11 +134,15 @@ def lint_text() -> None:
 def run_validate() -> None:
     validate_required_paths()
     validate_foundation_markers()
-    # Validate inference run files
     import subprocess
+    # Validate inference run files
     res = subprocess.run([sys.executable, str(ROOT / "scripts" / "validate_inference.py")], capture_output=True, text=True)
     if res.returncode != 0:
         fail(f"Inference validation failed:\n{res.stderr}\n{res.stdout}")
+    # Validate benchmark profiles
+    res_p = subprocess.run([sys.executable, str(ROOT / "scripts" / "validate_profiles.py")], capture_output=True, text=True)
+    if res_p.returncode != 0:
+        fail(f"Profile validation failed:\n{res_p.stderr}\n{res_p.stdout}")
 
 
 def run_lint() -> None:

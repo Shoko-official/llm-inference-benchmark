@@ -1,0 +1,19 @@
+{
+  "profile_id": "profile_small_load",
+  "description": "Low-concurrency profile for quick smoke tests with short prompts.",
+  "model_id": "mock-model-v1",
+  "prompt_config": {
+    "min_prompt_tokens": 32,
+    "max_prompt_tokens": 128,
+    "min_completion_tokens": 32,
+    "max_completion_tokens": 128
+  },
+  "concurrency_config": {
+    "concurrent_requests": 1,
+    "total_requests": 10
+  },
+  "latency_config": {
+    "base_ttft_ms": 100.0,
+    "time_per_token_ms": 10.0
+  }
+}
