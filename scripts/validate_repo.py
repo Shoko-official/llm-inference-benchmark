@@ -20,9 +20,11 @@ REQUIRED_FILES = [
     "docs/README.md",
     "figures/README.md",
     "benchmark/README.md",
+    "benchmark/mock_run.json",
     "benchmark/schemas/inference_run.json",
     "scripts/validate_repo.py",
     "scripts/validate_inference.py",
+    "scripts/generate_mock_data.py",
     "tests/README.md",
 ]
 
