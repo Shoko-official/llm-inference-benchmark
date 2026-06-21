@@ -22,6 +22,7 @@ REQUIRED_FILES = [
     "benchmark/README.md",
     "benchmark/schemas/inference_run.json",
     "scripts/validate_repo.py",
+    "scripts/validate_inference.py",
     "tests/README.md",
 ]
 
@@ -119,6 +120,11 @@ def lint_text() -> None:
 def run_validate() -> None:
     validate_required_paths()
     validate_foundation_markers()
+    # Validate inference run files
+    import subprocess
+    res = subprocess.run([sys.executable, str(ROOT / "scripts" / "validate_inference.py")], capture_output=True, text=True)
+    if res.returncode != 0:
+        fail(f"Inference validation failed:\n{res.stderr}\n{res.stdout}")
 
 
 def run_lint() -> None:
