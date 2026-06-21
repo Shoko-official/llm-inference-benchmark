@@ -26,6 +26,7 @@ REQUIRED_FILES = [
     "scripts/validate_repo.py",
     "scripts/validate_inference.py",
     "scripts/generate_mock_data.py",
+    "scripts/simulate_inference.py",
     "tests/README.md",
     "tests/test_schemas.py",
     "tests/test_simulator.py",
