@@ -1,0 +1,19 @@
+{
+  "profile_id": "profile_high_concurrency",
+  "description": "High-concurrency stress-test profile simulating production-like request bursts.",
+  "model_id": "mock-model-v1",
+  "prompt_config": {
+    "min_prompt_tokens": 64,
+    "max_prompt_tokens": 512,
+    "min_completion_tokens": 128,
+    "max_completion_tokens": 1024
+  },
+  "concurrency_config": {
+    "concurrent_requests": 16,
+    "total_requests": 200
+  },
+  "latency_config": {
+    "base_ttft_ms": 200.0,
+    "time_per_token_ms": 15.0
+  }
+}

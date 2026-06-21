@@ -48,6 +48,8 @@ def main() -> None:
         for path in bench_dir.rglob("*.json"):
             if "schemas" in path.parts:
                 continue
+            if "profiles" in path.parts:
+                continue
             validate_run_file(path, schema_path)
             print(f"Successfully validated run file: {path.relative_to(ROOT)}")
             found = True

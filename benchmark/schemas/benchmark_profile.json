@@ -1,0 +1,86 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "BenchmarkProfileSchema",
+  "description": "Schema for LLM benchmark model execution profile configuration.",
+  "type": "object",
+  "properties": {
+    "profile_id": {
+      "type": "string",
+      "description": "Unique identifier for the benchmark profile."
+    },
+    "description": {
+      "type": "string",
+      "description": "Human-readable description of this benchmark profile."
+    },
+    "model_id": {
+      "type": "string",
+      "description": "Identifier of the model to use in this profile."
+    },
+    "prompt_config": {
+      "type": "object",
+      "properties": {
+        "min_prompt_tokens": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Minimum prompt token count for generated requests."
+        },
+        "max_prompt_tokens": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Maximum prompt token count for generated requests."
+        },
+        "min_completion_tokens": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Minimum completion token count for generated responses."
+        },
+        "max_completion_tokens": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Maximum completion token count for generated responses."
+        }
+      },
+      "required": ["min_prompt_tokens", "max_prompt_tokens", "min_completion_tokens", "max_completion_tokens"],
+      "additionalProperties": false,
+      "description": "Prompt token configuration settings."
+    },
+    "concurrency_config": {
+      "type": "object",
+      "properties": {
+        "concurrent_requests": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Number of concurrent virtual users / request streams."
+        },
+        "total_requests": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "Total number of requests to execute in the run."
+        }
+      },
+      "required": ["concurrent_requests", "total_requests"],
+      "additionalProperties": false,
+      "description": "Concurrency and load configuration."
+    },
+    "latency_config": {
+      "type": "object",
+      "properties": {
+        "base_ttft_ms": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Base time-to-first-token in milliseconds."
+        },
+        "time_per_token_ms": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Generation time per token in milliseconds."
+        }
+      },
+      "required": ["base_ttft_ms", "time_per_token_ms"],
+      "additionalProperties": false,
+      "description": "Latency simulation configuration."
+    }
+  },
+  "required": ["profile_id", "model_id", "prompt_config", "concurrency_config", "latency_config"],
+  "additionalProperties": false
+}
