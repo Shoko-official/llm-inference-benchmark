@@ -43,11 +43,17 @@ def main() -> None:
     with open(output_path, "w", encoding="utf-8") as f:
         json.dump(run_data, f, indent=2)
         
+    traces_path = output_path.parent / f"{output_path.stem}_traces.json"
+    with open(traces_path, "w", encoding="utf-8") as f:
+        json.dump(sim.last_spans, f, indent=2)
+        
     try:
         rel_out = output_path.relative_to(ROOT)
+        rel_traces = traces_path.relative_to(ROOT)
     except ValueError:
         rel_out = output_path
-    print(f"Simulator completed. Saved {len(run_data['requests'])} requests to {rel_out}")
+        rel_traces = traces_path
+    print(f"Simulator completed. Saved {len(run_data['requests'])} requests to {rel_out} and traces to {rel_traces}")
 
 if __name__ == "__main__":
     main()

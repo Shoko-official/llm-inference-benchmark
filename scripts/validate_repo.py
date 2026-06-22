@@ -21,6 +21,7 @@ REQUIRED_FILES = [
     "figures/README.md",
     "benchmark/README.md",
     "benchmark/mock_run.json",
+    "benchmark/mock_run_traces.json",
     "benchmark/schemas/inference_run.json",
     "benchmark/schemas/benchmark_profile.json",
     "benchmark/simulator.py",
