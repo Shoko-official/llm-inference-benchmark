@@ -51,5 +51,43 @@ class TestLatencySimulator(unittest.TestCase):
         
         self.assertTrue(t_high > t_low, f"Expected higher concurrency to scale throughput. Got: high={t_high}, low={t_low}")
 
+    def test_telemetry_spans(self) -> None:
+        sim = LatencySimulator(base_ttft_ms=50.0, time_per_token_ms=5.0)
+        sim.simulate_run("run_telemetry", "model_a", num_requests=5, concurrent_requests=2)
+        
+        spans = sim.last_spans
+        # Each request has 1 queue span and 1 generation span
+        self.assertEqual(len(spans), 10)
+        
+        # Group spans by request_id via attributes
+        spans_by_req = {}
+        for span in spans:
+            req_id = span["attributes"]["request_id"]
+            if req_id not in spans_by_req:
+                spans_by_req[req_id] = []
+            spans_by_req[req_id].append(span)
+            
+            # Assert core span fields
+            self.assertIn("span_id", span)
+            self.assertIn("trace_id", span)
+            self.assertIn("name", span)
+            self.assertIn("start_time", span)
+            self.assertIn("end_time", span)
+            self.assertIn("duration_ms", span)
+            self.assertEqual(span["service_name"], "infer")
+            self.assertEqual(span["status"], "ok")
+            
+        for req_id, req_spans in spans_by_req.items():
+            self.assertEqual(len(req_spans), 2)
+            queue_span = next(s for s in req_spans if s["name"] == "request_queue_latency")
+            gen_span = next(s for s in req_spans if s["name"] == "generate_tokens")
+            
+            # Should share trace_id
+            self.assertEqual(queue_span["trace_id"], gen_span["trace_id"])
+            
+            # Context propagation: gen_span has queue_span as parent
+            self.assertEqual(gen_span["parent_span_id"], queue_span["span_id"])
+            self.assertEqual(queue_span["parent_span_id"], "N/A")
+
 if __name__ == "__main__":
     unittest.main()

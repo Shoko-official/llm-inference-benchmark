@@ -29,18 +29,36 @@ def validate_run_file(run_path: Path, schema_path: Path) -> None:
     except ValidationError as e:
         fail(f"Inference run validation error for {run_path.name}: {e.message}")
 
+def validate_traces_file(traces_path: Path, span_schema_path: Path) -> None:
+    schema = load_json(span_schema_path)
+    data = load_json(traces_path)
+    if not isinstance(data, list):
+        fail(f"Traces file {traces_path.name} must be a JSON array of spans.")
+    for idx, span in enumerate(data):
+        try:
+            validate(instance=span, schema=schema)
+        except ValidationError as e:
+            fail(f"Trace span validation error in {traces_path.name} at index {idx}: {e.message}")
+
 def main() -> None:
     parser = argparse.ArgumentParser(description="Validate LLM inference benchmark logs against schemas")
     parser.add_argument("--run", type=str, help="Path to a run log JSON file to validate")
     parser.add_argument("--schema", type=str, help="Path to the inference run JSON schema")
+    parser.add_argument("--span-schema", type=str, help="Path to the core span JSON schema")
     
     args = parser.parse_args()
     
     schema_path = Path(args.schema) if args.schema else ROOT / "benchmark" / "schemas" / "inference_run.json"
+    span_schema_path = Path(args.span_schema) if args.span_schema else ROOT.parent / "llm-systems-core" / "schemas" / "span.json"
     
     if args.run:
-        validate_run_file(Path(args.run), schema_path)
-        print(f"Successfully validated run file: {args.run}")
+        run_path = Path(args.run)
+        if run_path.name.endswith("_traces.json"):
+            validate_traces_file(run_path, span_schema_path)
+            print(f"Successfully validated traces file: {args.run}")
+        else:
+            validate_run_file(run_path, schema_path)
+            print(f"Successfully validated run file: {args.run}")
     else:
         # Find all JSON files in benchmark/ excluding schemas/
         bench_dir = ROOT / "benchmark"
@@ -50,11 +68,15 @@ def main() -> None:
                 continue
             if "profiles" in path.parts:
                 continue
-            validate_run_file(path, schema_path)
-            print(f"Successfully validated run file: {path.relative_to(ROOT)}")
+            if path.name.endswith("_traces.json"):
+                validate_traces_file(path, span_schema_path)
+                print(f"Successfully validated traces file: {path.relative_to(ROOT)}")
+            else:
+                validate_run_file(path, schema_path)
+                print(f"Successfully validated run file: {path.relative_to(ROOT)}")
             found = True
         if not found:
-            print("No inference run files found to validate.")
+            print("No inference run or trace files found to validate.")
 
 if __name__ == "__main__":
     main()

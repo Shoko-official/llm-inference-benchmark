@@ -2,7 +2,8 @@ from __future__ import annotations
 
 import random
 import heapq
-from datetime import datetime, timezone
+from datetime import datetime, timezone, timedelta
+import uuid
 from typing import List, Dict, Any, Optional
 
 class LatencySimulator:
@@ -15,6 +16,7 @@ class LatencySimulator:
         self.base_ttft_ms = base_ttft_ms
         self.time_per_token_ms = time_per_token_ms
         self.prompt_processing_rate_ms = prompt_processing_rate_ms
+        self.last_spans: List[Dict[str, Any]] = []
 
     def simulate_request(self, request_id: str, prompt_tokens: int, completion_tokens: int) -> dict:
         # TTFT: base + prompt processing + small noise
@@ -152,7 +154,7 @@ class LatencySimulator:
                 "ttft_ms": req["ttft_ms"]
             })
 
-        return {
+        run_data = {
             "run_id": run_id,
             "model_id": model_id,
             "timestamp": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
@@ -164,3 +166,56 @@ class LatencySimulator:
             },
             "requests": cleaned_requests
         }
+
+        # Generate spans matching core span.json schema
+        base_time = datetime.fromisoformat(run_data["timestamp"].replace("Z", "+00:00"))
+        spans = []
+        for req in completed_requests:
+            trace_id = uuid.uuid4().hex
+            
+            # Queue span
+            queue_span_id = uuid.uuid4().hex[:16]
+            queue_start = base_time + timedelta(seconds=req["arrival_time"])
+            queue_end = base_time + timedelta(seconds=req["start_time"])
+            
+            queue_span = {
+                "span_id": queue_span_id,
+                "trace_id": trace_id,
+                "parent_span_id": "N/A",
+                "name": "request_queue_latency",
+                "start_time": queue_start.isoformat().replace("+00:00", "Z"),
+                "end_time": queue_end.isoformat().replace("+00:00", "Z"),
+                "duration_ms": round(req.get("queue_time_ms", 0.0), 2),
+                "service_name": "infer",
+                "status": "ok",
+                "attributes": {
+                    "request_id": req["request_id"]
+                }
+            }
+            spans.append(queue_span)
+            
+            # Generation span
+            gen_span_id = uuid.uuid4().hex[:16]
+            gen_start = queue_end
+            gen_end = gen_start + timedelta(milliseconds=req["latency_ms"])
+            
+            gen_span = {
+                "span_id": gen_span_id,
+                "trace_id": trace_id,
+                "parent_span_id": queue_span_id,
+                "name": "generate_tokens",
+                "start_time": gen_start.isoformat().replace("+00:00", "Z"),
+                "end_time": gen_end.isoformat().replace("+00:00", "Z"),
+                "duration_ms": round(req["latency_ms"], 2),
+                "service_name": "infer",
+                "status": "ok",
+                "attributes": {
+                    "request_id": req["request_id"],
+                    "prompt_tokens": req["prompt_tokens"],
+                    "completion_tokens": req["completion_tokens"]
+                }
+            }
+            spans.append(gen_span)
+
+        self.last_spans = spans
+        return run_data
