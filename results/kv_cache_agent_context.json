@@ -1,0 +1,83 @@
+{
+  "benchmark_id": "kv-cache-agent-context-v1",
+  "timestamp": "2026-06-25T21:18:07.519233Z",
+  "config": {
+    "num_tasks": 100,
+    "max_turns": 8,
+    "seed": 42,
+    "kv_bytes_per_token": 512,
+    "model_assumption": "7B params, 32 layers, fp16 KV-cache"
+  },
+  "aggregate": {
+    "mean_hit_rate": 0.6577,
+    "max_memory_mb": 1.102,
+    "p95_memory_mb": 0.947,
+    "mean_memory_mb": 0.425
+  },
+  "by_turn": [
+    {
+      "turn": 1,
+      "num_tasks": 100,
+      "mean_hit_rate": 0.3926,
+      "mean_memory_mb": 0.167,
+      "mean_total_tokens": 341.6,
+      "mean_latency_ms": 2195.6
+    },
+    {
+      "turn": 2,
+      "num_tasks": 72,
+      "mean_hit_rate": 0.6332,
+      "mean_memory_mb": 0.293,
+      "mean_total_tokens": 600.8,
+      "mean_latency_ms": 2558.58
+    },
+    {
+      "turn": 3,
+      "num_tasks": 55,
+      "mean_hit_rate": 0.7457,
+      "mean_memory_mb": 0.418,
+      "mean_total_tokens": 855.2,
+      "mean_latency_ms": 2717.64
+    },
+    {
+      "turn": 4,
+      "num_tasks": 44,
+      "mean_hit_rate": 0.8049,
+      "mean_memory_mb": 0.534,
+      "mean_total_tokens": 1093.8,
+      "mean_latency_ms": 2804.55
+    },
+    {
+      "turn": 5,
+      "num_tasks": 31,
+      "mean_hit_rate": 0.8496,
+      "mean_memory_mb": 0.663,
+      "mean_total_tokens": 1358.5,
+      "mean_latency_ms": 2935.15
+    },
+    {
+      "turn": 6,
+      "num_tasks": 18,
+      "mean_hit_rate": 0.8487,
+      "mean_memory_mb": 0.825,
+      "mean_total_tokens": 1689.6,
+      "mean_latency_ms": 3470.93
+    },
+    {
+      "turn": 7,
+      "num_tasks": 17,
+      "mean_hit_rate": 0.8931,
+      "mean_memory_mb": 0.93,
+      "mean_total_tokens": 1903.9,
+      "mean_latency_ms": 3625.13
+    },
+    {
+      "turn": 8,
+      "num_tasks": 13,
+      "mean_hit_rate": 0.9318,
+      "mean_memory_mb": 1.013,
+      "mean_total_tokens": 2073.6,
+      "mean_latency_ms": 3628.48
+    }
+  ]
+}
