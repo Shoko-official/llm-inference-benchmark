@@ -1,0 +1,41 @@
+{
+  "profile_id": "profile_high_concurrency",
+  "model_id": "mock-model-v1",
+  "concurrency_runs": [
+    {
+      "concurrency": 1,
+      "throughput_tokens_per_sec": 61.76,
+      "mean_latency_ms": 4620.14,
+      "mean_ttft_ms": 284.38,
+      "total_requests": 200
+    },
+    {
+      "concurrency": 2,
+      "throughput_tokens_per_sec": 123.23,
+      "mean_latency_ms": 4525.63,
+      "mean_ttft_ms": 285.97,
+      "total_requests": 200
+    },
+    {
+      "concurrency": 4,
+      "throughput_tokens_per_sec": 244.61,
+      "mean_latency_ms": 4405.58,
+      "mean_ttft_ms": 285.06,
+      "total_requests": 200
+    },
+    {
+      "concurrency": 8,
+      "throughput_tokens_per_sec": 485.42,
+      "mean_latency_ms": 4779.43,
+      "mean_ttft_ms": 282.9,
+      "total_requests": 200
+    },
+    {
+      "concurrency": 16,
+      "throughput_tokens_per_sec": 934.15,
+      "mean_latency_ms": 4654.9,
+      "mean_ttft_ms": 285.0,
+      "total_requests": 200
+    }
+  ]
+}
