@@ -153,12 +153,18 @@ def run_lint() -> None:
 def run_test() -> None:
     run_validate()
     run_lint()
-    import unittest
-    suite = unittest.defaultTestLoader.discover(start_dir=str(ROOT / "tests"), pattern="test_*.py")
-    runner = unittest.TextTestRunner(verbosity=2)
-    result = runner.run(suite)
-    if not result.wasSuccessful():
-        fail("Unit tests failed")
+    try:
+        import pytest
+        exit_code = pytest.main(["-v", str(ROOT / "tests")])
+        if exit_code != 0:
+            fail("Unit tests failed")
+    except ImportError:
+        import unittest
+        suite = unittest.defaultTestLoader.discover(start_dir=str(ROOT / "tests"), pattern="test_*.py")
+        runner = unittest.TextTestRunner(verbosity=2)
+        result = runner.run(suite)
+        if not result.wasSuccessful():
+            fail("Unit tests failed")
 
 
 def main(argv: list[str]) -> int:
